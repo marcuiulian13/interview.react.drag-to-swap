@@ -49,7 +49,6 @@ export default createMachine({
     [State.Dropping]: {
       invoke: {
         src: 'dropAnimation',
-        onDone: State.Initial,
       },
       on: {
         [Event.Reset]: State.Initial,

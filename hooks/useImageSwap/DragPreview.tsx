@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { Variants, motion } from "framer-motion";
 import styled from "styled-components";
 import { Animation } from "./useAnimationControls";
 import useMousePosition from "../useMousePosition";
@@ -9,7 +9,7 @@ interface IDragPreviewProps {
   targetPosition?: {x: number; y: number};
 }
 
-const size = 64;
+const size = 128;
 const DragContainer = styled.div<{ src: string }>`
   position: fixed;
   top: 0;
@@ -39,10 +39,11 @@ export function DragPreview({ src, startPosition, targetPosition }: IDragPreview
     y: (targetPosition ? targetPosition.y : mouseY) - size / 2,
   }
 
-  const variants = {
+  const variants: Variants = {
     [Animation.Initial]: {
       opacity: 0,
       scale: 0,
+      transition: { duration: 0 }
     },
     [Animation.Dragging]: {
       opacity: 1,
@@ -51,6 +52,7 @@ export function DragPreview({ src, startPosition, targetPosition }: IDragPreview
     [Animation.Drop]: {
       opacity: 0,
       scale: 1,
+      border: 0,
       transition: { duration: 0.1 }
     },
   }
@@ -63,7 +65,7 @@ export function DragPreview({ src, startPosition, targetPosition }: IDragPreview
       // Use framer-motion to position the element
       animate={{ 
         ...position,
-        transition: { duration: targetPosition ? 0.15 : 0 } 
+        transition: { duration: targetPosition ? 0.1 : 0 } 
       }}
       src={src}
     />

@@ -5,7 +5,9 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head></Head>
+        <Head>
+          <script id="DragDropTouch" async src="https://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
+        </Head>
         <body>
           <Main />
           <NextScript />

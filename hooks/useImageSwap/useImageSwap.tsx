@@ -25,7 +25,7 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   const [src, setSrc] = useState<string>();
   const [dest, setDest] = useState<string>();
 
-  const [startPosition, setStartPosition] = useState<{x: number; y: number}>({ x: 0, y: 0 });
+  const [startPosition, setStartPosition] = useState<{x: number; y: number}>({ x: -1000, y: -1000 });
   const [targetPosition, setTargetPosition] = useState<{x: number; y: number}>();
 
   const {
@@ -39,15 +39,24 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   const [state, send] = useMachine(stateMachine, {
     services: {
       initialAnimation: () => initialAnimation().then(() => {
-        setSrc(undefined);
-        setDest(undefined);
-        setStartPosition({ x: 0, y: 0 });
+        setStartPosition({ x: -1000, y: -1000 });
         setTargetPosition(undefined);
       }),
       draggingAnimation,
       dragOverAnimation,
       dropAnimation: () => dropAnimation().then(() => {
         doSwap(src, dest);
+
+        return new Promise<void>(resolve => {
+          setSrc(undefined);
+          setDest(undefined);
+      
+          requestAnimationFrame(() => {    
+            send(Event.Reset);
+
+            resolve();
+          });
+        });
       }),
     },
   });
@@ -66,8 +75,11 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
     log('onDragStart');
     // Replace dragging preview with transparent image
     e.dataTransfer.setDragImage(transparentImage, 0, 0);
+    e.dataTransfer.dropEffect = 'move';
 
-    setSrc(e.currentTarget.src);
+    console.log('src is', e.currentTarget);
+
+    setSrc(e.currentTarget?.src);
     setStartPosition({ x: e.clientX, y: e.clientY });
 
     requestAnimationFrame(() => {
@@ -127,6 +139,8 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   const onDrop = (e: React.DragEvent<HTMLImageElement>) => {
     log('onDrop');
 
+    console.log('drop', e);
+
     const targetRect = e.currentTarget.getBoundingClientRect();
     setTargetPosition({ 
       x: targetRect.x + targetRect.width / 2, 
@@ -139,7 +153,7 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   };
 
   const dragPreview = useMemo(
-    () => <DragPreview 
+    () => src && <DragPreview 
       src={src} 
       targetPosition={targetPosition} 
       startPosition={startPosition}

@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import React, { useCallback } from 'react'
+import React, { useEffect } from 'react'
 
 import { motion } from "framer-motion";
 import Actions from "./actions";
 import { useImageSwap } from "../hooks/useImageSwap";
 import { PrintPhoto } from "./PrintPhoto";
+import { State } from "../hooks/useImageSwap/stateMachine";
 
 const Wrapper = styled.div`
   width: 600px;
@@ -38,9 +39,15 @@ const PageLayout = styled.div`
   padding: 20px;
   margin: 17px 0 42px;
   justify-content: space-between;
+
+  user-select: none;
 `;
 
 export default function PrintPage({ data, doSwap }) {
+  useEffect(() => {
+    console.log('new data', data);
+  }, [data])
+
   const {
     src,
     dest,
@@ -52,6 +59,10 @@ export default function PrintPage({ data, doSwap }) {
       dragPreview,
     },
   } = useImageSwap({ doSwap });
+
+  useEffect(() => {
+    console.log('new state', state);
+  }, [state])
 
   return (
     // This div orchestrates the animations via the animationControls,
@@ -72,10 +83,11 @@ export default function PrintPage({ data, doSwap }) {
                 {entry.images.map((image: string, j) => {
                   return (
                     <PrintPhoto
-                      key={image}
+                      key={j}
                       src={src}
                       dest={dest}
                       image={image}
+                      canDrag={state === State.Initial}
                       {...draggableHandlers}
                       {...droppableHandlers}
                     />

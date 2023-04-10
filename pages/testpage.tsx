@@ -50,6 +50,8 @@ export default function Testpage() {
   ]);
 
   const doSwap = useCallback((src: string, dest: string) => {
+    console.log('doSwap', src, dest);
+
     const srcEntryIndex = data.findIndex((entry: any) => entry.images.includes(src));
     const destEntryIndex = data.findIndex((entry: any) => entry.images.includes(dest));
 

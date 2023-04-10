@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {AnimatePresence, motion} from 'framer-motion';
+import {AnimatePresence, Variants, motion} from 'framer-motion';
 import { IDraggableHandlers, IDroppableHandlers } from '../hooks/useImageSwap';
 import { Animation } from '../hooks/useImageSwap/useAnimationControls';
 
@@ -7,6 +7,7 @@ interface IPrintPhoto extends IDraggableHandlers, IDroppableHandlers {
   src: string;
   dest: string;
   image: string;
+  canDrag: boolean;
 }
 
 const PrintPhotoContainer = styled.div`
@@ -25,6 +26,7 @@ export function PrintPhoto({
   src,
   dest,
   image,
+  canDrag,
   onDragStart,
   onDragEnd,
   onDragOver,
@@ -35,10 +37,11 @@ export function PrintPhoto({
   const isSrc = src === image;
   const isDest = dest === image;
 
-  const originalVariants = {
+  const originalVariants: Variants = {
     [Animation.Initial]: {
       scale: 1,
       opacity: 1,
+      transition: { duration: 0 }
     },
     [Animation.Dragging]: {
       opacity: isSrc ? 0.8 : 1,
@@ -48,19 +51,14 @@ export function PrintPhoto({
     },
   };
 
-  const destVariants = {
-    // [Animation.Initial]: {
-    //   clipPath: 'circle(0% at 50% 50%)',
-    // },
+  const destVariants: Variants = {
     [Animation.Drop]: {
       clipPath: 'circle(100% at 50% 50%)',
+      transition: { duration: 0.4 }
     },
   };
 
-  const srcVariants = {
-    // [Animation.Initial]: {
-    //   opacity: 0,
-    // },
+  const srcVariants: Variants = {
     [Animation.Drop]: {
       opacity: 1,
     },
@@ -71,7 +69,7 @@ export function PrintPhoto({
       <motion.img
         src={image} 
         alt=""
-        draggable
+        draggable={canDrag}
         onDragStart={onDragStart as any} // For some reason the img element has a different signature
         onDragEnd={onDragEnd as any} // For some reason the img element has a different signature
         onDragOver={onDragOver}
