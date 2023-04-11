@@ -1,5 +1,5 @@
 import { Variants } from "framer-motion";
-import { Animation } from "../../hooks/useImageSwap/useAnimationControls";
+import { Animation } from "../../hooks/useDragToSwap/useAnimationControls";
 
 export const imageVariants: (opts: { isSrc: boolean; isDest: boolean }) => Variants = (opts) => ({
   [Animation.Initial]: {

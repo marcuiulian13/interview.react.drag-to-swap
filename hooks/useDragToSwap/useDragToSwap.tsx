@@ -1,10 +1,11 @@
 import { useMachine } from "@xstate/react";
 import { useEffect, useMemo, useState } from "react";
 import stateMachine, { Event, State } from "./stateMachine";
-import { DragPreview } from "./DragPreview";
+import { DragPreview } from "../../components/DragPreview";
 import { useAnimationControls } from "./useAnimationControls";
 import { log } from "../../utils/logger";
 import { AnimatePresence } from "framer-motion";
+import { useTransparentPixel } from "../useTransparentPixel";
 
 export interface IDraggableHandlers {
   onDragStart: (e: React.DragEvent<HTMLImageElement>) => void;
@@ -18,16 +19,25 @@ export interface IDroppableHandlers {
   onDrop: (e: React.DragEvent<HTMLImageElement>) => void;
 }
 
-interface IUseImageSwapProps {
+interface IUseDragToSwapProps {
   doSwap: (src: string, target: string) => void;
 }
 
-export function useImageSwap({ doSwap }: IUseImageSwapProps) {
+export function useDragToSwap({ doSwap }: IUseDragToSwapProps) {
+  // Used to remember the source and destination images for swap
   const [src, setSrc] = useState<string>();
   const [dest, setDest] = useState<string>();
 
+  // Start position is used to set the initial position of the drag preview
   const [startPosition, setStartPosition] = useState<{x: number; y: number}>({ x: -1000, y: -1000 });
+
+  // Target position is used to override the preview position when we are dropping
   const [targetPosition, setTargetPosition] = useState<{x: number; y: number}>();
+
+  // This is a hack to get around the fact that the drag image
+  // is not allowed to be transparent. I create a 1x1 transparent
+  // image and use that as the drag image to get rid of the native preview.
+  const transparentPixel = useTransparentPixel();
 
   const {
     controls,
@@ -56,20 +66,21 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
     },
   });
 
-  // This is a hack to get around the fact that the drag image
-  // is not allowed to be transparent. We create a 1x1 transparent
-  // image and use that as the drag image.
-  const [transparentImage, setTransparentImage] = useState<HTMLImageElement>();
-  useEffect(() => {
-    const image = new Image(1, 1);
-    image.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    setTransparentImage(image);
-  }, []);
+  const dragPreview = useMemo(
+    () => <AnimatePresence>
+      {src && <DragPreview 
+        src={src} 
+        targetPosition={targetPosition} 
+        startPosition={startPosition}
+      />}
+    </AnimatePresence>, 
+    [src, targetPosition, startPosition],
+  );
 
   const onDragStart = (e: React.DragEvent<HTMLImageElement>) => {
     log('onDragStart');
     // Replace dragging preview with transparent image
-    e.dataTransfer.setDragImage(transparentImage, 0, 0);
+    e.dataTransfer.setDragImage(transparentPixel, 0, 0);
     e.dataTransfer.dropEffect = 'move';
 
     setSrc(e.currentTarget?.src);
@@ -140,17 +151,6 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
       send(Event.Drop);
     });
   };
-
-  const dragPreview = useMemo(
-    () => <AnimatePresence>
-      {src && <DragPreview 
-        src={src} 
-        targetPosition={targetPosition} 
-        startPosition={startPosition}
-      />}
-    </AnimatePresence>, 
-    [src, targetPosition, startPosition],
-  );
 
   return {
     src,

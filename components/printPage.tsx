@@ -3,9 +3,9 @@ import React, { useEffect } from 'react'
 
 import { motion } from "framer-motion";
 import Actions from "./actions";
-import { useImageSwap } from "../hooks/useImageSwap";
+import { useDragToSwap } from "../hooks/useDragToSwap";
 import { PrintPhoto } from "./PrintPhoto";
-import { State } from "../hooks/useImageSwap/stateMachine";
+import { State } from "../hooks/useDragToSwap/stateMachine";
 
 const Wrapper = styled.div`
   width: 600px;
@@ -54,7 +54,7 @@ export default function PrintPage({ data, doSwap }) {
     components: {
       dragPreview,
     },
-  } = useImageSwap({ doSwap });
+  } = useDragToSwap({ doSwap });
 
   return (
     // This div orchestrates the animations via the animationControls,

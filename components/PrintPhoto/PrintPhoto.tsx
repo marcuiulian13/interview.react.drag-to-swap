@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { motion} from 'framer-motion';
-import { IDraggableHandlers, IDroppableHandlers } from '../../hooks/useImageSwap';
+import { IDraggableHandlers, IDroppableHandlers } from '../../hooks/useDragToSwap';
 import { destPlaceholderVariants, imageVariants, srcPlaceholderVariants } from './animations';
 
 interface IPrintPhoto extends IDraggableHandlers, IDroppableHandlers {

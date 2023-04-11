@@ -1,5 +1,5 @@
 import { Variants } from "framer-motion";
-import { Animation } from "./useAnimationControls";
+import { Animation } from "../../hooks/useDragToSwap/useAnimationControls";
 
 export const dragPreviewVariants: Variants = {
   [Animation.Initial]: {
@@ -16,7 +16,7 @@ export const dragPreviewVariants: Variants = {
   [Animation.Drop]: {
     opacity: 0,
     scale: 1,
-    border: 0,
+    border: 2,
     transition: { duration: 0.1 }
   },
 }

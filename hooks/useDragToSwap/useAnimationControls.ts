@@ -9,8 +9,8 @@ export enum Animation {
 }
 
 export function useAnimationControls() {
-  // These controls are tied to the state machine and
-  //  the callbacks are automatically called on state change.
+  // These controls can be tied to the state machine and
+  // the callbacks are automatically called on state entry.
   const controls = useAnimation();
 
   const initialAnimation = useCallback(() => controls.start(Animation.Initial), [controls]);
