@@ -44,10 +44,6 @@ const PageLayout = styled.div`
 `;
 
 export default function PrintPage({ data, doSwap }) {
-  useEffect(() => {
-    console.log('new data', data);
-  }, [data])
-
   const {
     src,
     dest,
@@ -59,10 +55,6 @@ export default function PrintPage({ data, doSwap }) {
       dragPreview,
     },
   } = useImageSwap({ doSwap });
-
-  useEffect(() => {
-    console.log('new state', state);
-  }, [state])
 
   return (
     // This div orchestrates the animations via the animationControls,
@@ -87,7 +79,7 @@ export default function PrintPage({ data, doSwap }) {
                       src={src}
                       dest={dest}
                       image={image}
-                      canDrag={state === State.Initial}
+                      canDrag={state === State.Initial || state === State.Dragging || state === State.DraggingOver}
                       {...draggableHandlers}
                       {...droppableHandlers}
                     />

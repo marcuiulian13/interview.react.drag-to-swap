@@ -4,6 +4,7 @@ import stateMachine, { Event, State } from "./stateMachine";
 import { DragPreview } from "./DragPreview";
 import { useAnimationControls } from "./useAnimationControls";
 import { log } from "../../utils/logger";
+import { AnimatePresence } from "framer-motion";
 
 export interface IDraggableHandlers {
   onDragStart: (e: React.DragEvent<HTMLImageElement>) => void;
@@ -47,16 +48,10 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
       dropAnimation: () => dropAnimation().then(() => {
         doSwap(src, dest);
 
-        return new Promise<void>(resolve => {
-          setSrc(undefined);
-          setDest(undefined);
-      
-          requestAnimationFrame(() => {    
-            send(Event.Reset);
-
-            resolve();
-          });
-        });
+        setSrc(undefined);
+        setDest(undefined);
+        
+        send(Event.Reset);
       }),
     },
   });
@@ -77,8 +72,6 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
     e.dataTransfer.setDragImage(transparentImage, 0, 0);
     e.dataTransfer.dropEffect = 'move';
 
-    console.log('src is', e.currentTarget);
-
     setSrc(e.currentTarget?.src);
     setStartPosition({ x: e.clientX, y: e.clientY });
 
@@ -90,9 +83,7 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   const onDragEnd = (e: React.DragEvent<HTMLImageElement>) => {
     log('onDragEnd');
 
-    requestAnimationFrame(() => {
-      send(Event.DragEnd);
-    });
+    send(Event.DragEnd);
   };
 
   const onDragOver = (e: React.DragEvent<HTMLImageElement>) => {
@@ -139,8 +130,6 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   const onDrop = (e: React.DragEvent<HTMLImageElement>) => {
     log('onDrop');
 
-    console.log('drop', e);
-
     const targetRect = e.currentTarget.getBoundingClientRect();
     setTargetPosition({ 
       x: targetRect.x + targetRect.width / 2, 
@@ -153,11 +142,13 @@ export function useImageSwap({ doSwap }: IUseImageSwapProps) {
   };
 
   const dragPreview = useMemo(
-    () => src && <DragPreview 
-      src={src} 
-      targetPosition={targetPosition} 
-      startPosition={startPosition}
-    />, 
+    () => <AnimatePresence>
+      {src && <DragPreview 
+        src={src} 
+        targetPosition={targetPosition} 
+        startPosition={startPosition}
+      />}
+    </AnimatePresence>, 
     [src, targetPosition, startPosition],
   );
 

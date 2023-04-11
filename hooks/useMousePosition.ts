@@ -11,6 +11,10 @@ const useMousePosition = ({ x: initialX, y: initialY }: { x: number; y: number }
 
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
+      if (e.clientX === 0 && e.clientY === 0) {
+        return;
+      } 
+      
       setX(e.clientX);
       setY(e.clientY);
     };

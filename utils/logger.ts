@@ -1,3 +1,3 @@
 export function log(message: string, ...args: any[]) {
-  console.log(message, ...args);
+  // console.log(message, ...args);
 }
