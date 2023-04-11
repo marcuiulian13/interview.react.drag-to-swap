@@ -1,13 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * This hook returns the mouse position on the screen, even when dragging.
  * 
  * @returns {x, y} mouse position
  */
-const useMousePosition = ({ x: initialX, y: initialY }: { x: number; y: number }): {x: number; y: number} => {
-  const [x, setX] = useState(initialX);
-  const [y, setY] = useState(initialY);
+const useMousePosition = (initial: { x: number; y: number }): {x: number; y: number} => {
+  const [position, setPosition] = useState(initial);
 
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
@@ -15,8 +14,7 @@ const useMousePosition = ({ x: initialX, y: initialY }: { x: number; y: number }
         return;
       } 
       
-      setX(e.clientX);
-      setY(e.clientY);
+      setPosition({ x: e.clientX, y: e.clientY });
     };
     
     window.addEventListener("mousemove", updateMousePosition);
@@ -25,7 +23,7 @@ const useMousePosition = ({ x: initialX, y: initialY }: { x: number; y: number }
     return () => window.removeEventListener("mousemove", updateMousePosition);
   }, []);
 
-  return { x, y };
+  return position;
 };
 
 export default useMousePosition;

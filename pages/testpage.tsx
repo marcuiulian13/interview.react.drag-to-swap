@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import Head from "next/head";
-import PrintPage from "../components/printPage";
 import styled from "styled-components";
+
+import PrintPage from "../components/printPage";
+import { swapImages } from '../utils/swapImages';
 
 const PageHeader = styled.div`
   width: 600px;
@@ -50,54 +52,7 @@ export default function Testpage() {
   ]);
 
   const doSwap = useCallback((src: string, dest: string) => {
-    if (!src || !dest) return;
-
-    const srcEntryIndex = data.findIndex((entry: any) => entry.images.includes(src));
-    const destEntryIndex = data.findIndex((entry: any) => entry.images.includes(dest));
-
-    const srcEntry = data[srcEntryIndex];
-    const destEntry = data[destEntryIndex];
-
-    const srcIndex = srcEntry.images.indexOf(src);
-    const destIndex = destEntry.images.indexOf(dest);
-
-    if (srcEntry === destEntry) {
-      // Swap inside the same page
-      const newImages = [...srcEntry.images];
-      newImages[srcIndex] = dest;
-      newImages[destIndex] = src;
-
-      setData((data) => {
-        const newData = [...data];
-        newData[srcEntryIndex] = {
-          ...srcEntry,
-          images: newImages,
-        };
-        return newData;
-      });
-    } else {
-      // Swap between pages
-      const newSrcImages = [...srcEntry.images];
-      const newDestImages = [...destEntry.images];
-
-      newSrcImages.splice(srcIndex, 1, dest);
-      newDestImages.splice(destIndex, 1, src);
-
-      setData((data) => {
-        const newData = [...data];
-        newData[srcEntryIndex] = {
-          ...srcEntry,
-          images: newSrcImages,
-        };
-
-        newData[destEntryIndex] = {
-          ...destEntry,
-          images: newDestImages,
-        };
-
-        return newData;
-      });
-    }
+    setData(swapImages(data, src, dest))
   }, [data]);
 
   return (
